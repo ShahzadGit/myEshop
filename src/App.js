@@ -1,22 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import HomePageLayout from './layouts/HomePageLayout'
 import MainLayout from './layouts/MainLayout'
 import LoginLayout from './layouts/LoginLayout'
 import RecoveryLayout from './layouts/RecoveryLayout'
+import DashboardLayout from './layouts/DashboardLayout'
 import './default.scss'
 import { auth, handleUserProfile } from './firebase/utils'
 import { setCurrentUser } from './redux/User/user.action'
 import { connect } from 'react-redux'
+import WithAuth from './HOC/withAuth'
 
-class App extends React.Component {
+const App = (props) => {
+  const { setCurrentUser, currentUser } = props
 
-  authListener = null
-
-  componentDidMount() {
-    const { setCurrentUser } = this.props
-
-    this.authListener = auth.onAuthStateChanged(async userAuth => {
+  useEffect(() => {
+    //componentDidMount
+    const authListener = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
         console.log("User-->", userAuth)
         const userRef = await handleUserProfile(userAuth)
@@ -29,33 +29,34 @@ class App extends React.Component {
       }
       setCurrentUser(userAuth)
     })
-  }
+    //componentWillUnmount()
+    return () => {
+      authListener();
+    }
+  }, [])
 
-  componentWillUnmount() {
-    this.authListener();
-  }
-  render() {
-    const { currentUser } = this.props;
-    return (
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<HomePageLayout />} />
+  
+  return (
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<HomePageLayout />} />
 
-          <Route path="/registration" element={
-            currentUser ? <Navigate replace to="/" /> :
-              <MainLayout />} />
+        <Route path="/registration" element={
+          //currentUser ? <Navigate replace to="/" /> :
+            <MainLayout />} />
 
-          <Route path="/login" element={
-            currentUser ? <Navigate replace to="/" /> :
-              <LoginLayout />}
-          />
+        <Route path="/login" element={
+          //currentUser ? <Navigate replace to="/" /> :
+            <LoginLayout />}
+        />
 
-          <Route path="/recovery" element={<RecoveryLayout />} />
+        <Route path="/recovery" element={<RecoveryLayout />} />
 
-        </Routes>
-      </div>
-    );
-  }
+        <Route path="/dashboard" element={<WithAuth><DashboardLayout /></WithAuth>} />
+ 
+      </Routes>
+    </div>
+  );
 
 }
 
