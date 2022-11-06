@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import HomePageLayout from './layouts/HomePageLayout'
 import MainLayout from './layouts/MainLayout'
 import LoginLayout from './layouts/LoginLayout'
@@ -8,11 +8,12 @@ import DashboardLayout from './layouts/DashboardLayout'
 import './default.scss'
 import { auth, handleUserProfile } from './firebase/utils'
 import { setCurrentUser } from './redux/User/user.action'
-import { connect } from 'react-redux'
 import WithAuth from './HOC/withAuth'
+import { useDispatch } from 'react-redux'
 
-const App = (props) => {
-  const { setCurrentUser, currentUser } = props
+
+const App = () => {
+  const dispatch = useDispatch()
 
   useEffect(() => {
     //componentDidMount
@@ -21,13 +22,15 @@ const App = (props) => {
         console.log("User-->", userAuth)
         const userRef = await handleUserProfile(userAuth)
         userRef.onSnapshot(snapshot => {
-          setCurrentUser({
-            id: snapshot.id,
-            ...snapshot.data()
-          })
+          dispatch(
+            setCurrentUser({
+              id: snapshot.id,
+              ...snapshot.data()
+            })
+          )
         })
       }
-      setCurrentUser(userAuth)
+      dispatch(setCurrentUser(userAuth))
     })
     //componentWillUnmount()
     return () => {
@@ -35,7 +38,7 @@ const App = (props) => {
     }
   }, [])
 
-  
+
   return (
     <div className="App">
       <Routes>
@@ -43,29 +46,21 @@ const App = (props) => {
 
         <Route path="/registration" element={
           //currentUser ? <Navigate replace to="/" /> :
-            <MainLayout />} />
+          <MainLayout />} />
 
         <Route path="/login" element={
           //currentUser ? <Navigate replace to="/" /> :
-            <LoginLayout />}
+          <LoginLayout />}
         />
 
         <Route path="/recovery" element={<RecoveryLayout />} />
 
         <Route path="/dashboard" element={<WithAuth><DashboardLayout /></WithAuth>} />
- 
+
       </Routes>
     </div>
   );
 
 }
 
-const mapStateToProps = ({ user }) => ({
-  currentUser: user.currentUser
-})
-
-const mapDispatchToProps = dispatch => ({
-  setCurrentUser: user => dispatch(setCurrentUser(user))
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;
