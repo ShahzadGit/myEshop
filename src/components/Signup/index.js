@@ -6,14 +6,19 @@ import Input from './../Forms/Input'
 import AuthWrapper from '../AuthWrapper'
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
-import { signUpUser, resetAllAuthForms } from './../../redux/User/user.action'
+import { signUpStart } from './../../redux/User/user.action'
 
-const mapState = ({user}) => ({
-    signUpSuccess: user.signUpSuccess,
-    signUpError: user.signUpError
+// const mapState = ({user}) => ({
+//     signUpSuccess: user.signUpSuccess,
+//     signUpError: user.signUpError
+// })
+const mapState = ({ user }) => ({
+    currentUser: user.currentUser,
+    userErr: user.userErr
 })
 const SignUp = () => {
-    const {signUpSuccess, signUpError} = useSelector(mapState)
+    // const {signUpSuccess, signUpError} = useSelector(mapState)
+    const { currentUser, userErr } = useSelector(mapState)
     const dispatch = useDispatch()
     const [displayName, setDisplayName] = useState('')
     const [email, setEmail] = useState('')
@@ -23,18 +28,18 @@ const SignUp = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(signUpSuccess){
+        if (currentUser) {
             resetForm()
-            dispatch(resetAllAuthForms())
+            // dispatch(resetAllAuthForms())
             navigate('/')
         }
-    },[signUpSuccess])
+    }, [currentUser])
 
     useEffect(() => {
-        if(signUpError.length > 0){
-            setError(signUpError)
+        if (userErr.length > 0) {
+            setError(userErr)
         }
-    },[signUpError])
+    }, [userErr])
 
     const resetForm = () => {
         setDisplayName('')
@@ -46,10 +51,10 @@ const SignUp = () => {
 
     const handleSubmit = async e => {
         e.preventDefault()
-        dispatch(signUpUser({
+        dispatch(signUpStart({
             displayName, email, password, confirmPassword
         }))
-       
+
     }
 
     const configAuthWrapper = {
@@ -62,7 +67,7 @@ const SignUp = () => {
                 {error.length > 0 && (
                     <ul>
                         <li>
-                           {error}
+                            {error}
                         </li>
                     </ul>
                 )}
@@ -72,21 +77,21 @@ const SignUp = () => {
                         name="displayName"
                         value={displayName}
                         placeholder="Full Name"
-                        onChange={(e)=>{setDisplayName(e.target.value)}}
+                        onChange={(e) => { setDisplayName(e.target.value) }}
                     />
                     <Input
                         type="email"
                         name="email"
                         value={email}
                         placeholder="Email"
-                        onChange={(e)=>{setEmail(e.target.value)}}
+                        onChange={(e) => { setEmail(e.target.value) }}
                     />
                     <Input
                         type="password"
                         name="password"
                         value={password}
                         placeholder="Password"
-                        onChange={(e)=>{setPassword(e.target.value)}}
+                        onChange={(e) => { setPassword(e.target.value) }}
                     />
 
                     <Input
@@ -94,7 +99,7 @@ const SignUp = () => {
                         name="confirmPassword"
                         value={confirmPassword}
                         placeholder="Confirm Password"
-                        onChange={(e)=>{setConfirmPassword(e.target.value)}}
+                        onChange={(e) => { setConfirmPassword(e.target.value) }}
                     />
 
                     <div className="socialSignin">

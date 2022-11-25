@@ -6,36 +6,16 @@ import LoginLayout from './layouts/LoginLayout'
 import RecoveryLayout from './layouts/RecoveryLayout'
 import DashboardLayout from './layouts/DashboardLayout'
 import './default.scss'
-import { auth, handleUserProfile } from './firebase/utils'
-import { setCurrentUser } from './redux/User/user.action'
+import { checkUserSession } from './redux/User/user.action'
 import WithAuth from './HOC/withAuth'
 import { useDispatch } from 'react-redux'
 
-
-const App = () => {
+const App = props => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    //componentDidMount
-    const authListener = auth.onAuthStateChanged(async userAuth => {
-      if (userAuth) {
-        console.log("User-->", userAuth)
-        const userRef = await handleUserProfile(userAuth)
-        userRef.onSnapshot(snapshot => {
-          dispatch(
-            setCurrentUser({
-              id: snapshot.id,
-              ...snapshot.data()
-            })
-          )
-        })
-      }
-      dispatch(setCurrentUser(userAuth))
-    })
-    //componentWillUnmount()
-    return () => {
-      authListener();
-    }
+    dispatch(checkUserSession())
+    console.log("Hi")
   }, [])
 
 
@@ -64,3 +44,26 @@ const App = () => {
 }
 
 export default App;
+
+// useEffect(() => {
+  //   //componentDidMount
+  //   const authListener = auth.onAuthStateChanged(async userAuth => {
+  //     if (userAuth) {
+  //       console.log("User-->", userAuth)
+  //       const userRef = await handleUserProfile(userAuth)
+  //       userRef.onSnapshot(snapshot => {
+  //         dispatch(
+  //           setCurrentUser({
+  //             id: snapshot.id,
+  //             ...snapshot.data()
+  //           })
+  //         )
+  //       })
+  //     }
+  //     dispatch(setCurrentUser(userAuth))
+  //   })
+  //   //componentWillUnmount()
+  //   return () => {
+  //     authListener();
+  //   }
+  // }, [])

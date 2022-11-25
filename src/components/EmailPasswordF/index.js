@@ -6,36 +6,37 @@ import AuthWrapper from './../AuthWrapper'
 // import { auth } from './../../firebase/utils'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { resetPassword, resetAllAuthForms } from './../../redux/User/user.action'
+import { resetPasswordStart, resetUserState } from './../../redux/User/user.action'
 
 const mapState = ({ user }) => ({
-    resetSuccess: user.resetSuccess,
-    resetError: user.resetError
+    resetPasswordSuccess: user.resetPasswordSuccess,
+    userErr: user.userErr
 })
 
 function EmailPasswordF(props) {
-    const { resetSuccess, resetError } = useSelector(mapState)
+    const { resetPasswordSuccess, userErr } = useSelector(mapState)
     const dispatch = useDispatch()
     const [email, setEmail] = useState('')
     const [error, setError] = useState('')
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (resetSuccess) {
-            dispatch(resetAllAuthForms())
+        if (resetPasswordSuccess) {
+            // dispatch(resetAllAuthForms())
+            dispatch(resetUserState())
             navigate('/login')
         }
-    }, [resetSuccess])
+    }, [resetPasswordSuccess])
 
     useEffect(() => {
-        if (resetError.length > 0) {
-            setError(resetError)
+        if (userErr.length > 0) {
+            setError(userErr)
         }
-    }, [resetError])
+    }, [userErr])
 
     const handleSubmit = e => {
         e.preventDefault()
-        dispatch(resetPassword({ email }))
+        dispatch(resetPasswordStart({ email }))
     }
     const configAuthWrapper = {
         headline: 'e-mail Password'
