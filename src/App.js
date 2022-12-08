@@ -5,9 +5,12 @@ import MainLayout from './layouts/MainLayout'
 import LoginLayout from './layouts/LoginLayout'
 import RecoveryLayout from './layouts/RecoveryLayout'
 import DashboardLayout from './layouts/DashboardLayout'
+import AdminLayout from './layouts/AdminLayout'
+import AdminToolbar  from './components/AdminToolbar'
 import './default.scss'
 import { checkUserSession } from './redux/User/user.action'
-import WithAuth from './HOC/withAuth'
+import WithAuth from './HOC/withAuth' 
+import WithAdminAuth from './HOC/withAdminAuth' 
 import { useDispatch } from 'react-redux'
 
 const App = props => {
@@ -21,6 +24,7 @@ const App = props => {
 
   return (
     <div className="App">
+      <AdminToolbar />
       <Routes>
         <Route path="/" element={<HomePageLayout />} />
 
@@ -36,6 +40,8 @@ const App = props => {
         <Route path="/recovery" element={<RecoveryLayout />} />
 
         <Route path="/dashboard" element={<WithAuth><DashboardLayout /></WithAuth>} />
+
+        <Route path="/admin" element={<WithAdminAuth><AdminLayout /></WithAdminAuth>} />
 
       </Routes>
     </div>
